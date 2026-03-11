@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Support - Minimal UI</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:24px}
+    textarea{width:100%;height:120px}
+    button{padding:8px 12px;margin-top:8px}
+    pre{background:#f6f8fa;padding:12px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h2>AI Support — Minimal UI</h2>
+  <p>Enter a ticket and click Analyze (uses backend at <code>/api/analyze-ticket</code>).</p>
+  <textarea id="ticket">My password reset link is not working.</textarea>
+  <br/>
+  <button id="btn">Analyze</button>
+  <h3>Result</h3>
+  <pre id="out">(no result)</pre>
+
+  <script>
+    const out = document.getElementById('out');
+    document.getElementById('btn').onclick = async () => {
+      out.textContent = 'Running...';
+      try{
+        const res = await fetch('/api/analyze-ticket', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ticket_text: document.getElementById('ticket').value})
+        });
+        const j = await res.json();
+        out.textContent = JSON.stringify(j, null, 2);
+      }catch(e){ out.textContent = String(e); }
+    }
+  </script>
+</body>
+</html>
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AI Ticket Helper - Minimal Frontend</title>
+</head>
+<body>
+  <h1>AI Ticket Helper (Minimal)</h1>
+  <textarea id="ticket" rows="8" cols="80" placeholder="Paste ticket text here..."></textarea><br>
+  <button id="analyze">Analyze Ticket</button>
+  <pre id="output"></pre>
+
+  <script>
+    const apiBase = 'http://localhost:8000/api';
+    document.getElementById('analyze').onclick = async () => {
+      const text = document.getElementById('ticket').value;
+      const out = document.getElementById('output');
+      out.textContent = 'Calling API...';
+      try {
+        const res = await fetch(apiBase + '/analyze-ticket', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ticket_text: text})
+        });
+        const j = await res.json();
+        out.textContent = JSON.stringify(j, null, 2);
+      } catch (e) {
+        out.textContent = 'Error: ' + e.toString();
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+article_id,title,content,category,views,clicks
+KB001,"How to Reset Your Password","To reset your password: 1) Go to login page 2) Click 'Forgot Password' 3) Enter your email 4) Check your inbox for reset link 5) Click the link and create new password. Link expires in 24 hours.",Authentication,450,120
+KB002,"Troubleshooting 404 Errors","If you encounter 404 errors: 1) Clear browser cache 2) Try incognito mode 3) Check URL spelling 4) Ensure you have proper access permissions 5) Contact support if issue persists.",Access,320,85
+KB003,"Payment Processing Guide","For payment issues: 1) Verify card details 2) Check if card is enabled for online transactions 3) Ensure sufficient balance 4) Try a different payment method 5) Contact your bank if declined.",Payment,580,200
+KB004,"Data Export Tutorial","To export your data: 1) Go to Settings > Data Export 2) Select date range 3) Choose format (CSV, JSON, Excel) 4) Click Export button 5) Download will start automatically. Large exports may take 5-10 minutes.",Data Export,290,95
+KB005,"Performance Optimization Tips","To improve performance: 1) Close unnecessary browser tabs 2) Clear browser cache 3) Check internet speed 4) Try different browser 5) Disable browser extensions temporarily.",Performance,410,110
+KB006,"Username Recovery Steps","To recover username: 1) Go to login page 2) Click 'Forgot Username' 3) Enter registered email 4) Check inbox for username reminder 5) Use username to login.",Authentication,380,100
+KB007,"File Upload Guidelines","File upload limits: Free plan: 5MB, Pro plan: 50MB, Enterprise: 500MB. Supported formats: PDF, DOCX, XLSX, PNG, JPG. For large files, use compression or upgrade your plan.",File Upload,520,140
+KB008,"API Authentication Guide","API authentication requires valid API key in header: Authorization: Bearer YOUR_API_KEY. Keys can be generated in Settings > API Keys. Keys expire after 90 days.",API,680,250
+KB009,"SSO Integration Setup","SSO integration steps: 1) Enable SSO in Admin panel 2) Configure identity provider 3) Add redirect URLs 4) Test connection 5) Deploy to users. Supports Okta, Azure AD, Auth0.",Integration,210,70
+KB010,"Billing and Invoices FAQ","Billing FAQ: Plans are billed monthly. View invoices in Billing > Invoices. Update payment method in Billing > Payment Methods. Refunds processed within 5-7 business days.",Billing,490,160

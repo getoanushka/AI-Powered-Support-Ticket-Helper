@@ -1,0 +1,11 @@
+ticket_id,ticket_text,category,created_at
+TKT001,"My password reset link is not working. I clicked it multiple times but nothing happens. My email is john@example.com",Authentication,2025-01-15 10:30:00
+TKT002,"I cannot access my dashboard. Getting 404 error when trying to login from https://app.example.com/dashboard",Access,2025-01-15 11:45:00
+TKT003,"The payment gateway is showing an error. Transaction ID: TXN-12345. My card ending in 4532 was charged twice.",Payment,2025-01-15 12:15:00
+TKT004,"How do I export my data? I need all my reports from last month in CSV format.",Data Export,2025-01-15 13:20:00
+TKT005,"Application is very slow today. Pages take 30+ seconds to load. Is there a server issue?",Performance,2025-01-15 14:10:00
+TKT006,"I forgot my username. My registered email is sarah@company.com. Can you help me recover it?",Authentication,2025-01-15 15:00:00
+TKT007,"Unable to upload files larger than 10MB. Getting error: 'File size exceeds limit'. How to fix?",File Upload,2025-01-15 16:30:00
+TKT008,"My API key is not working. Key: sk-test-abc123xyz. Getting 401 unauthorized error.",API,2025-01-15 17:45:00
+TKT009,"Need help setting up SSO integration with Okta. Do you have documentation for this?",Integration,2025-01-16 09:00:00
+TKT010,"Billing question: I was charged $99 but my plan is supposed to be $79/month. Invoice #INV-2025-001",Billing,2025-01-16 10:15:00
