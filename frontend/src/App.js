@@ -13,7 +13,8 @@ export default function App(){
   const [gapData, setGapData] = useState(null);
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
-  const API_BASE = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000/api';
+  // Local fallback; Railway should set REACT_APP_BACKEND_URL.
+  const API_BASE = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001/api';
 
   const fetchTickets = async () => {
     try {

@@ -2,7 +2,6 @@ from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
@@ -11,20 +10,34 @@ from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
 
-# Import custom modules (package-relative imports)
-from .preprocessing2 import preprocess_ticket
-from .classification_tagging import TicketClassifier
-from .recommend_api import KBRecommender
-from .gap_analysis import GapAnalyzer
-from .csv_loader import CSVLoader
+try:
+    from motor.motor_asyncio import AsyncIOMotorClient
+except Exception:
+    AsyncIOMotorClient = None
+
+# Import custom modules. Railway root-directory deployments import this file as
+# `server`, while local repo-root runs import it as `backend.server`.
+try:
+    from .preprocessing2 import preprocess_ticket
+    from .classification_tagging import TicketClassifier
+    from .recommend_api import KBRecommender
+    from .gap_analysis import GapAnalyzer
+    from .csv_loader import CSVLoader
+except ImportError:
+    from preprocessing2 import preprocess_ticket
+    from classification_tagging import TicketClassifier
+    from recommend_api import KBRecommender
+    from gap_analysis import GapAnalyzer
+    from csv_loader import CSVLoader
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# MongoDB connection. The current API reads CSV files, so Mongo is optional for
+# deployment; keep a client only when the driver is installed.
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+client = AsyncIOMotorClient(mongo_url) if AsyncIOMotorClient else None
+db = client[os.environ.get('DB_NAME', 'test_database')] if client else None
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -45,8 +58,8 @@ def get_recommender():
     if recommender is None:
         try:
             recommender = KBRecommender()
-        except FileNotFoundError:
-            # Index not built yet
+        except Exception as e:
+            logger.warning("KB Recommender not available: %s", e)
             return None
     return recommender
 
@@ -87,12 +100,14 @@ async def analyze_ticket(request: TicketRequest):
         classifier = TicketClassifier()
         classification = await classifier.classify_ticket(preprocessed['anonymized'])
         
-        # Recommend
+        # Recommend. Keep analysis usable even if the embedding backend fails.
+        recommendations = []
         rec = get_recommender()
         if rec:
-            recommendations = rec.recommend(preprocessed['anonymized'], top_k=3)
-        else:
-            recommendations = []
+            try:
+                recommendations = rec.recommend(preprocessed['anonymized'], top_k=3)
+            except Exception as e:
+                logger.warning("Recommendation failed: %s", e)
         
         return {
             "ticket_text": request.ticket_text,
@@ -116,7 +131,11 @@ async def recommend(request: RecommendRequest):
                 detail="KB index not built. Please run build_index.py first."
             )
         
-        recommendations = rec.recommend(request.ticket_text, top_k=request.top_k)
+        try:
+            recommendations = rec.recommend(request.ticket_text, top_k=request.top_k)
+        except Exception as e:
+            logger.warning("Recommendation failed: %s", e)
+            recommendations = []
         
         return {
             "ticket_text": request.ticket_text,
@@ -197,7 +216,10 @@ async def build_index_endpoint():
     """
     try:
         # Use package-relative import so the endpoint works when running as a module
-        from .build_index import KBIndexBuilder
+        try:
+            from .build_index import KBIndexBuilder
+        except ImportError:
+            from build_index import KBIndexBuilder
         builder = KBIndexBuilder()
         csv_path = ROOT_DIR / 'data' / 'kb_articles.csv'
         builder.build_and_save(str(csv_path))
@@ -231,14 +253,10 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    if client:
+        client.close()
 
 @app.on_event("startup")
 async def startup_event():
     logger.info("AI Support Ticket Helper API started")
-    # Try to load recommender on startup
-    try:
-        get_recommender()
-        logger.info("KB Recommender loaded successfully")
-    except:
-        logger.warning("KB Recommender not available. Run /api/build-index to initialize.")
+    logger.info("KB Recommender will be loaded on first recommendation request")

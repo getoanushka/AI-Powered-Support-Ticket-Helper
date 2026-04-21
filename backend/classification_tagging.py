@@ -256,8 +256,10 @@ Respond ONLY with valid JSON, no additional text."""
             except Exception:
                 pass
 
-        # Final fallback: use offline embedding-based classifier if available
-        if _HAS_EMBEDDING_CLASSIFIER:
+        # Final fallback: use offline embedding-based classifier only when
+        # explicitly enabled. It downloads a large model on first run, which is
+        # too slow and heavy for the default Railway web API deployment.
+        if _HAS_EMBEDDING_CLASSIFIER and os.getenv('ENABLE_EMBEDDING_CLASSIFIER') == 'true':
             try:
                 import asyncio as _asyncio
 
