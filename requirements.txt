@@ -1,0 +1,12 @@
+fastapi==0.110.1
+gunicorn==22.0.0
+uvicorn==0.25.0
+python-dotenv==1.2.1
+pydantic==2.12.5
+starlette==0.37.2
+pandas==2.3.3
+numpy==2.3.5
+requests==2.32.5
+motor==3.3.1
+pymongo==4.5.0
+openai==1.99.9
