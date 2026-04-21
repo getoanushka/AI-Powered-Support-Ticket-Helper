@@ -1,0 +1,43 @@
+# AI Ticket Helper Startup Instructions
+
+## 1. Activate Python virtual environment
+PowerShell:
+& "c:/Users/HP/Desktop/ai ticket infosys/.venv/Scripts/Activate.ps1"
+
+## 2. Install Python dependencies (one-time)
+& "c:/Users/HP/Desktop/ai ticket infosys/.venv/Scripts/python.exe" -m pip install -r "c:/Users/HP/Desktop/ai ticket infosys/backend/requirements.txt"
+
+## 3. Start backend FastAPI server
+cd "c:/Users/HP/Desktop/ai ticket infosys"
+& "c:/Users/HP/Desktop/ai ticket infosys/.venv/Scripts/python.exe" -m uvicorn backend.server:app --host 0.0.0.0 --port 8001 --reload
+
+## 4. Build FAISS KB index (required once before recommendations)
+cd "c:/Users/HP/Desktop/ai ticket infosys/backend"
+& "c:/Users/HP/Desktop/ai ticket infosys/.venv/Scripts/python.exe" build_index.py
+
+Alternative (via API):
+curl -X POST http://localhost:8001/api/build-index
+
+## 5. Start React frontend
+cd "c:/Users/HP/Desktop/ai ticket infosys/frontend"
+npm install
+npm start
+
+## 6. Optionally run Streamlit dashboard
+cd "c:/Users/HP/Desktop/ai ticket infosys/backend"
+& "c:/Users/HP/Desktop/ai ticket infosys/.venv/Scripts/python.exe" streamlit_dashboard.py
+# or run script
+./run_dashboard.sh
+
+## 7. Access URLs
+Backend API: http://localhost:8001/api/
+Frontend UI: http://localhost:3000
+Streamlit Dashboard: http://localhost:8501
+
+## 8. Quick API test (in separate terminal)
+& "c:/Users/HP/Desktop/ai ticket infosys/.venv/Scripts/python.exe" -c "import requests; print(requests.get('http://localhost:8001/api/').json())"
+
+## Notes
+- Ensure MongoDB is running locally (if required) at mongodb://localhost:27017.
+- Ensure env file `.env` exists for `MONGO_URL`, `DB_NAME`, and `EMERGENT_LLM_KEY`.
+- If firewall blocks ports, allow 8001, 3000, 8501.
