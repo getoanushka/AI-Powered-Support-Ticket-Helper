@@ -41,6 +41,9 @@ db = client[os.environ.get('DB_NAME', 'test_database')] if client else None
 
 # Create the main app without a prefix
 app = FastAPI()
+@app.get("/")
+def home():
+    return {"message": "Backend is running 🚀"}
 
 # Dashboard route: redirect to the Streamlit user dashboard
 @app.get("/dashboard")
