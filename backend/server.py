@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import os
@@ -238,6 +239,25 @@ async def build_index_endpoint():
 
 # Include the router in the main app
 app.include_router(api_router)
+
+# Serve built React frontend when available
+FRONTEND_BUILD_DIR = ROOT_DIR.parent / 'frontend' / 'build'
+if FRONTEND_BUILD_DIR.exists():
+    app.mount(
+        '/static',
+        StaticFiles(directory=str(FRONTEND_BUILD_DIR / 'static')),
+        name='static'
+    )
+
+    @app.get('/', response_class=HTMLResponse)
+    @app.get('/{full_path:path}', response_class=HTMLResponse)
+    async def serve_spa(full_path: str = ''):
+        if full_path.startswith('api'):
+            raise HTTPException(status_code=404)
+        index_path = FRONTEND_BUILD_DIR / 'index.html'
+        if index_path.exists():
+            return FileResponse(index_path)
+        raise HTTPException(status_code=404)
 
 app.add_middleware(
     CORSMiddleware,
