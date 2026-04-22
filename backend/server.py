@@ -42,9 +42,6 @@ db = client[os.environ.get('DB_NAME', 'test_database')] if client else None
 
 # Create the main app without a prefix
 app = FastAPI()
-@app.get("/")
-def home():
-    return {"message": "Backend is running 🚀"}
 
 # Dashboard route: redirect to the Streamlit user dashboard
 @app.get("/dashboard")
@@ -258,6 +255,10 @@ if FRONTEND_BUILD_DIR.exists():
         if index_path.exists():
             return FileResponse(index_path)
         raise HTTPException(status_code=404)
+else:
+    @app.get("/")
+    def home():
+        return {"message": "Backend is running 🚀"}
 
 app.add_middleware(
     CORSMiddleware,
